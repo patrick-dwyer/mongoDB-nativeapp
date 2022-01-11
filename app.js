@@ -1,33 +1,57 @@
-const {
-  MongoClient
-} = require("mongodb");
+// getting-started.js
+const mongoose = require('mongoose'); //requring mongoose package
 
-// Connection URI
-const uri =
-  "mongodb://localhost:27017";
+mongoose.connect('mongodb://localhost:27017/fruitsDB'); //local server + database name
 
-// Create a new MongoClient
-const client = new MongoClient(uri);
+const fruitSchema = new mongoose.Schema({
+  name: String,
+  rating: Number,
+  review: String
+});
 
-async function run() {
-  try {
-    await client.connect();
-        const database = client.db("fruitsDB");
-        const haiku = database.collection("fruit");
-        // create a document to insert
-        const doc = {
-          _id: 4,
-          name: "Pear",
-          rating: 8,
-          review: "Good fruit on a hot day."
-        }
-        const result = await haiku.insertOne(doc);
-        console.log(`A document was inserted with the _id: ${result.insertedId}`);
+const Fruit = mongoose.model('Fruit', fruitSchema);
 
+const banana = new Fruit({
+  name: "Banana",
+  rating: 10,
+  review: "The best fruit of all."
+});
 
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await client.close();
+const kiwi = new Fruit({
+  name: "Kiwi",
+  rating: 7,
+  review: "Not too bad to eat, even the skin."
+});
+
+const grapefruit = new Fruit({
+  name: "Grapefruit",
+  rating: 0,
+  review: "My least favourite fruit, really bad."
+});
+
+Fruit.insertMany([banana, kiwi, grapefruit], function(err) {
+  if (err) {
+    console.log(err);
+  } else {
+    console.log("All fruits have been added to collection.")
   }
-}
-run().catch(console.dir);
+});
+
+
+
+
+
+const peopleSchema = new mongoose.Schema({
+  name: String,
+  age: Number
+}) //schema for fruits database
+
+const People = mongoose.model('People', peopleSchema); //collection fruits for fruitsDB using fruitSchema
+
+const people = new People({
+  name: 'John',
+  age: 37,
+}); //adding new document to fruits collection in fruitsDB following fruitsSchema
+
+// people.save();
+//executing code
